@@ -20,13 +20,13 @@ def classify_scenario(transactions, salary_details):
     window_end = latest_date + timedelta(days=2)
 
     debit_sum = 0
-
+    
     for txn in transactions:
         if txn.type == "Debit" and latest_date <= txn.date <= window_end:
             debit_sum += txn.amount
 
     ratio = debit_sum / salary_amount
-
+    
     # Scenario B: money drained
     if ratio > 0.8:
         return "B"
@@ -44,19 +44,38 @@ def detect_salary_stopped(details, txns):
 
     salary_txns = details["transactions"]
 
+    # need at least 2 salaries to predict pattern
     if len(salary_txns) < 2:
         return False
 
+    # 🚀 MVP LOGIC (BEST FOR NOW)
+    # if only 2 salary entries → assume next one missing → churn
+    # If scenario is B (salary drained), DO NOT mark as churn
+    if len(salary_txns) == 2:
+        latest_salary = salary_txns[-1]["amount"]
+
+        # check if money was used (not abandoned)
+        debit_sum = sum(
+            txn.amount for txn in txns
+            if txn.type == "Debit"
+        )
+
+        if debit_sum > 0:
+            return False  # active usage → NOT churn
+
+        return True
+
+    # fallback (future safe)
     last_salary_date = max(
         datetime.strptime(t["date"], "%Y-%m-%d").date()
         for t in salary_txns
     )
 
     interval = details["features"]["interval_mean"]
-
     expected_next_salary = last_salary_date + timedelta(days=int(interval))
 
-    current_date = datetime.now().date()  # ✅ correct placement
+    # use transaction timeline (not system time)
+    current_date = max(txn.date for txn in txns).date()
 
     grace_days = 5
 

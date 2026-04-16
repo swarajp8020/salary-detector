@@ -27,6 +27,8 @@ def extract_sender(details):
 
     if "SALARY" in details or "COMPANY" in details:
         return "SALARY_ACCOUNT"
+    if "CLIENT" in details or "PAYMENT" in details:
+        return "BUSINESS"
 
     parts = details.split("/")
     return parts[1] if len(parts) > 1 else details

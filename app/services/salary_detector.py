@@ -28,7 +28,8 @@ def detect_salary_account(transactions):
 
         if features is None:
             continue
-
+        if sender == "BUSINESS":
+            continue 
         score = calculate_score(features)
 
         print(f"[DEBUG] Sender={sender}, Score={score}, Features={features}")
@@ -75,12 +76,12 @@ def calculate_score(features):
 
     interval_std = features["interval_std"]
     amount_std = features["amount_std"]
-    amount_mean = features["amount_mean"]  # ✅ MOVE THIS UP
+    amount_mean = features["amount_mean"]  
     count = features["count"]
 
     # Normalize scores (lower std = better)
     time_score = 1 / (1 + interval_std)
-    amount_score = 1 / (1 + (amount_std / amount_mean))  # ✅ now safe
+    amount_score = 1 / (1 + (amount_std / amount_mean)) 
 
     salary_boost = 1 if amount_mean > 30000 else 0
 
