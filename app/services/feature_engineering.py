@@ -1,5 +1,11 @@
 # Extract: credit transactions, date intervals, amount variance, sender extraction
 # Only CREDIT transactions, Group by sender, Extract: dates, amounts, intervals
+#  extracted:
+# interval_mean  → salary frequency
+# interval_std   → consistency
+# amount_mean    → salary level
+# amount_std     → stability
+# count          → repetition
 
 from collections import defaultdict
 import numpy as np
