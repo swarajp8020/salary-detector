@@ -20,15 +20,24 @@ def analyze_sample():
 
         if result["is_salary_account"]:
             scenario = classify_scenario(txns, result["details"])
-            churn = detect_salary_stopped(result["details"], txns)
+            churn_result = detect_salary_stopped(result["details"], txns)
+
+            if churn_result == "INSUFFICIENT_DATA":
+                salary_stopped = False
+                churn_status = "INSUFFICIENT_DATA"
+            else:
+                salary_stopped = churn_result
+                churn_status = "CONFIRMED"
         else:
             scenario = "NON_SALARY"
-            churn = False
+            salary_stopped = False
+            churn_status = "NOT_APPLICABLE"
 
         response[customer_id] = {
             **result,
             "scenario": scenario,
-            "salary_stopped": churn
+            "salary_stopped": salary_stopped,
+            "churn_status": churn_status
         }
     print(f"Processing customer: {customer_id}")
     print(f"Transactions count: {len(txns)}")

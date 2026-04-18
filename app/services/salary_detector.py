@@ -28,6 +28,8 @@ def detect_salary_account(transactions):
 
         if features is None:
             continue
+        if not is_probable_salary(features):
+            continue
         if sender == "BUSINESS":
             continue 
         score = calculate_score(features)
@@ -56,21 +58,43 @@ def detect_salary_account(transactions):
     if best_candidate is None:
         return {
             "is_salary_account": False,
-            "confidence": 0
+            "confidence": 0,
+            "confidence_level": "LOW"
         }
 
     if best_score > 0.35:
+        confidence = float(round(best_score, 2))
         return {
             "is_salary_account": True,
-            "confidence": float(round(best_score, 2)),
+            "confidence": confidence,
+            "confidence_level": get_confidence_level(confidence),
             "details": best_candidate
         }
 
+    confidence = float(round(best_score, 2))
     return {
         "is_salary_account": False,
-        "confidence": float(round(best_score, 2))
+        "confidence": confidence,
+        "confidence_level": get_confidence_level(confidence)
     }
 
+def is_probable_salary(features):
+    interval_mean = features["interval_mean"]
+    interval_std = features["interval_std"]
+    amount_std = features["amount_std"]
+    count = features["count"]
+
+    # ✅ RELAXED RULES
+    is_periodic = (
+        (24 <= interval_mean <= 35) or
+        (5 <= interval_mean <= 9) or
+        (12 <= interval_mean <= 18)
+    )
+
+    is_stable_amount = amount_std < 10000   # 🔥 increased from 5000
+    has_repetition = count >= 2
+
+    return is_periodic and is_stable_amount and has_repetition
 
 def calculate_score(features):
 
@@ -96,3 +120,11 @@ def calculate_score(features):
 
     final_score = min(final_score, 1.0)
     return final_score
+
+def get_confidence_level(score):
+    if score >= 0.8:
+        return "HIGH"
+    elif score >= 0.5:
+        return "MEDIUM"
+    else:
+        return "LOW"

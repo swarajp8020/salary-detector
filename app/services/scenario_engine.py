@@ -44,43 +44,28 @@ def detect_salary_stopped(details, txns):
 
     salary_txns = details["transactions"]
 
-    # need at least 2 salaries to predict pattern
+    # ✅ FIX 1: minimum history check (PUT HERE)
     if len(salary_txns) < 2:
-        return False
+        return "INSUFFICIENT_DATA" # insufficient data, don't mark stopped
 
-    # 🚀 MVP LOGIC (BEST FOR NOW)
-    # if only 2 salary entries → assume next one missing → churn
-    # If scenario is B (salary drained), DO NOT mark as churn
-    if len(salary_txns) == 2:
-        latest_salary = salary_txns[-1]["amount"]
-
-        # check if money was used (not abandoned)
-        debit_sum = sum(
-            txn.amount for txn in txns
-            if txn.type == "Debit"
-        )
-
-        if debit_sum > 0:
-            return False  # active usage → NOT churn
-
-        return True
-
-    # fallback (future safe)
+    # ✅ get last salary date
     last_salary_date = max(
         datetime.strptime(t["date"], "%Y-%m-%d").date()
         for t in salary_txns
     )
 
     interval = details["features"]["interval_mean"]
+
     expected_next_salary = last_salary_date + timedelta(days=int(interval))
 
-    # use transaction timeline (not system time)
+    # ✅ define current_date properly
     current_date = max(txn.date for txn in txns).date()
+
+    print(type(current_date), type(expected_next_salary))
 
     grace_days = 5
 
-    print(f"[CHURN DEBUG] last={last_salary_date}, expected={expected_next_salary}, current={current_date}")
-
+    # ✅ churn logic
     if current_date > expected_next_salary + timedelta(days=grace_days):
         return True
 

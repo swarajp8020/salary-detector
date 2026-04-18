@@ -30,14 +30,20 @@ def group_by_sender(transactions):
 
 def extract_sender(details):
     details = details.upper()
-
-    if "SALARY" in details or "COMPANY" in details:
-        return "SALARY_ACCOUNT"
-    if "CLIENT" in details or "PAYMENT" in details:
-        return "BUSINESS"
-
     parts = details.split("/")
-    return parts[1] if len(parts) > 1 else details
+
+    if len(parts) >= 2:
+        sender = parts[1]
+        words = sender.split()
+
+        sender = " ".join(words[:2])  # better than words[0]
+
+        if sender.replace(" ", "").isdigit():
+            return f"ANON_{sender.replace(' ', '')}"
+
+        return sender.strip()
+
+    return details
 
 
 def compute_features(txns):
