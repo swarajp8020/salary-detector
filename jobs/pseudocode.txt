@@ -1,0 +1,17 @@
+PYSPARK LOGIC
+for each customer:
+    credits = filter CREDIT transactions
+
+    sort credits by date
+
+    intervals = compute day differences
+
+    pattern = detect frequency(intervals)
+
+    amounts = extract amounts
+
+    if variance(amounts) low AND pattern stable:
+        mark as salary account
+
+    if last expected salary missing:
+        mark as churn risk

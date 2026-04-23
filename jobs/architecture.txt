@@ -1,0 +1,15 @@
+[Data Lake / CSV]
+        |
+        v
+[PySpark Job]
+   |
+   |-- Preprocessing
+   |-- Salary Detection
+   |-- Pattern Detection
+   |-- Scoring Engine
+   |
+        v
+[Output Table: Salary_Profile]
+        |
+        v
+[Nudge System (external team)]
