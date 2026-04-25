@@ -1,0 +1,7 @@
+If Venv Not Showing in Kernel List
+Run this in your PowerShell terminal:
+bash# Make sure venv is active
+& c:\Users\ACER\Downloads\salary-detector\jobs\venv\Scripts\Activate.ps1
+
+# Register venv as kernel
+python -m ipykernel install --user --name=salary-venv --display-name="Salary Detector (venv)
