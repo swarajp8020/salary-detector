@@ -1,0 +1,16 @@
+| Customer | What’s actually happening                                   |
+| -------- | ----------------------------------------------------------- |
+| C1       | Has real salary (Infosys/TCS etc) + lots of small UPI noise |
+| C2       | Same as C1 (multiple salary sources + noise)                |
+| C3       | Mixed (salary + irregular inflow)                           |
+| C4       | Mostly UPI/general credits → no clear employer              |
+| C5       | Same as C4                                                  |
+| C6       | One possible wage-like entry but weak repetition            |
+| C7       | Has salary pattern (Infosys visible)                        |
+| C8       | Mostly noise                                                |
+| C9       | Mostly noise                                                |
+| C10      | Fake/incorrect labeled (like FRIEND SALARY)                 |
+So:
+C1, C2, C3, C7 → should be TRUE salary accounts
+C4, C5, C6, C8, C9 → should be inferred (pattern-based)
+C10 → should be FALSE (fake signal)
